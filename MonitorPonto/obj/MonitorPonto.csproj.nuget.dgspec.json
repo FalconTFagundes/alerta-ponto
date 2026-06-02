@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\rafael.souza\\Desktop\\Projetos\\MonitorPonto\\MonitorPonto\\MonitorPonto.csproj": {}
+    "C:\\Users\\rafael.souza\\Desktop\\alerta-ponto\\MonitorPonto\\MonitorPonto.csproj": {}
   },
   "projects": {
-    "C:\\Users\\rafael.souza\\Desktop\\Projetos\\MonitorPonto\\MonitorPonto\\MonitorPonto.csproj": {
+    "C:\\Users\\rafael.souza\\Desktop\\alerta-ponto\\MonitorPonto\\MonitorPonto.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\rafael.souza\\Desktop\\Projetos\\MonitorPonto\\MonitorPonto\\MonitorPonto.csproj",
+        "projectUniqueName": "C:\\Users\\rafael.souza\\Desktop\\alerta-ponto\\MonitorPonto\\MonitorPonto.csproj",
         "projectName": "MonitorPonto",
-        "projectPath": "C:\\Users\\rafael.souza\\Desktop\\Projetos\\MonitorPonto\\MonitorPonto\\MonitorPonto.csproj",
+        "projectPath": "C:\\Users\\rafael.souza\\Desktop\\alerta-ponto\\MonitorPonto\\MonitorPonto.csproj",
         "packagesPath": "C:\\Users\\rafael.souza\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\rafael.souza\\Desktop\\Projetos\\MonitorPonto\\MonitorPonto\\obj\\",
+        "outputPath": "C:\\Users\\rafael.souza\\Desktop\\alerta-ponto\\MonitorPonto\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\rafael.souza\\AppData\\Roaming\\NuGet\\NuGet.Config",

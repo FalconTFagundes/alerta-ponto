@@ -42,6 +42,13 @@ public partial class App : Application
         _tray = new TaskbarIcon();
         _tray.ToolTipText = "Monitor de Ponto — BigCard";
 
+        try
+        {
+            var uri = new Uri("pack://application:,,,/Resources/relogio.ico");
+            _tray.IconSource = new System.Windows.Media.Imaging.BitmapImage(uri);
+        }
+        catch { }
+
         var menu = new ContextMenu();
 
         var itemStatus = new MenuItem
