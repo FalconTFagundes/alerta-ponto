@@ -9,6 +9,10 @@ public class StateService
     private readonly string _statePath;
     private readonly JsonSerializerOptions _opts = new() { WriteIndented = true };
 
+    // Lock necessário: o loop de monitoramento roda em Task.Run (thread separada)
+    // e pode acessar o arquivo simultaneamente com a UI
+    private readonly object _fileLock = new();
+
     public StateService()
     {
         _statePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "state.json");
@@ -16,23 +20,29 @@ public class StateService
 
     private Dictionary<string, object> ReadAll()
     {
-        try
+        lock (_fileLock)
         {
-            if (!File.Exists(_statePath)) return new();
-            var json = File.ReadAllText(_statePath);
-            return JsonSerializer.Deserialize<Dictionary<string, object>>(json) ?? new();
+            try
+            {
+                if (!File.Exists(_statePath)) return new();
+                var json = File.ReadAllText(_statePath);
+                return JsonSerializer.Deserialize<Dictionary<string, object>>(json) ?? new();
+            }
+            catch { return new(); }
         }
-        catch { return new(); }
     }
 
     private void WriteAll(Dictionary<string, object> data)
     {
-        try
+        lock (_fileLock)
         {
-            var json = JsonSerializer.Serialize(data, _opts);
-            File.WriteAllText(_statePath, json);
+            try
+            {
+                var json = JsonSerializer.Serialize(data, _opts);
+                File.WriteAllText(_statePath, json);
+            }
+            catch { }
         }
-        catch { }
     }
 
     public bool Exists(string key)

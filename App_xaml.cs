@@ -95,6 +95,10 @@ public partial class App : Application
         });
         menu.Items.Add(new Separator());
 
+        var itemBatidas = new MenuItem { Header = "📋  Batidas de Hoje" };
+        itemBatidas.Click += (_, _) => AbrirBatidasHoje();
+        menu.Items.Add(itemBatidas);
+
         var itemConfig = new MenuItem { Header = "⚙️  Configurações" };
         itemConfig.Click += (_, _) => AbrirConfiguracoes();
         menu.Items.Add(itemConfig);
@@ -106,7 +110,17 @@ public partial class App : Application
         menu.Items.Add(itemSair);
 
         _tray.ContextMenu = menu;
-        _tray.TrayMouseDoubleClick += (_, _) => AbrirConfiguracoes();
+
+        // Clique duplo abre batidas de hoje
+        _tray.TrayMouseDoubleClick += (_, _) => AbrirBatidasHoje();
+    }
+
+    private void AbrirBatidasHoje()
+    {
+        if (_monitor == null) return;
+        var win = new PunchStatusWindow(_monitor, _config);
+        win.Show();
+        win.Activate();
     }
 
     private void AbrirConfiguracoes()

@@ -12,6 +12,9 @@ public class MonitorService
     public event Action<AlertTipo, AlertNivel, string, string, string>? AlertRequested;
     // tipo, nivel, nome, info1 (saida/horario), info2 (esperado)
 
+    // Expõe as batidas mais recentes para a janela de diagnóstico
+    public event Action<List<PunchRecord>>? RecordsUpdated;
+
     public MonitorService(AppConfig config)
     {
         _config = config;
@@ -47,6 +50,10 @@ public class MonitorService
                 if (DentroDoHorarioAtivo())
                 {
                     var records = await _rhid.GetPunchRecordsTodayAsync();
+
+                    // Notifica a UI com os registros atuais (para diagnóstico)
+                    RecordsUpdated?.Invoke(records);
+
                     ProcessRecords(records);
                 }
             }
@@ -127,7 +134,7 @@ public class MonitorService
         var idPerson = _config.Person.IdPerson.ToString();
         var record   = records.FirstOrDefault(r => r.EmployeeId == idPerson);
 
-        var hoje   = DateTime.Now.ToString("yyyy-MM-dd");
+        var hoje    = DateTime.Now.ToString("yyyy-MM-dd");
         var punches = new List<(DateTime Ts, string Type)>();
 
         if (record != null)
@@ -160,6 +167,7 @@ public class MonitorService
         var keyAviso  = $"{id}_entrada_aviso_{hoje:yyyyMMdd}";
         var keyUrgent = $"{id}_entrada_urgente_{hoje:yyyyMMdd}";
 
+        // Já tem ao menos 1 batida registrada → entrada OK, não alertar
         var temEntrada = punches.Count >= 1;
         if (temEntrada) return;
 
@@ -169,9 +177,11 @@ public class MonitorService
         var gatilhoUrgent = horarioDt + TimeSpan.FromMinutes(cfg.ToleranciaMinutos);
         var horarioFmt    = horarioTime.ToString("HH:mm");
 
+        // Urgente tem prioridade e só dispara uma vez por dia
         if (now >= gatilhoUrgent && !_state.Exists(keyUrgent))
         {
             _state.Set(keyUrgent, now.ToString("o"));
+            AudioService.PlayUrgente();
             AlertRequested?.Invoke(AlertTipo.Entrada, AlertNivel.Urgente, nome, horarioFmt, "");
             return;
         }
@@ -179,6 +189,7 @@ public class MonitorService
         if (now >= gatilhoAviso && !_state.Exists(keyAviso))
         {
             _state.Set(keyAviso, now.ToString("o"));
+            AudioService.PlayAviso();
             AlertRequested?.Invoke(AlertTipo.Entrada, AlertNivel.Aviso, nome, horarioFmt, "");
         }
     }
@@ -196,7 +207,7 @@ public class MonitorService
         var now  = DateTime.Now;
         var keyEstado = $"{id}_almoco";
 
-        // 3ª batida = retorno
+        // 3ª batida (retorno do almoço) já registrada → limpar estado e não alertar
         if (punches.Count >= 3)
         {
             _state.Remove(keyEstado);
@@ -205,8 +216,9 @@ public class MonitorService
             return;
         }
 
-        // 2ª batida = saída almoço
-        if (punches.Count >= 2)
+        // 2ª batida = possível saída para o almoço
+        // Verifica se a 2ª batida está dentro da janela de almoço configurada
+        if (punches.Count >= 2 && !_state.Exists(keyEstado))
         {
             var segunda = punches[1];
 
@@ -216,42 +228,40 @@ public class MonitorService
                 var hora2 = TimeOnly.FromDateTime(segunda.Ts);
                 if (hora2 >= jIni && hora2 <= jFim)
                 {
-                    if (!_state.Exists(keyEstado))
-                    {
-                        var esperado  = segunda.Ts + TimeSpan.FromMinutes(cfg.DuracaoMinutos);
-                        var gAviso    = esperado - TimeSpan.FromMinutes(cfg.AntecedenciaMinutos);
-                        var gUrgente  = esperado + TimeSpan.FromMinutes(cfg.ToleranciaMinutos);
+                    var esperado = segunda.Ts + TimeSpan.FromMinutes(cfg.DuracaoMinutos);
+                    var gAviso   = esperado - TimeSpan.FromMinutes(cfg.AntecedenciaMinutos);
+                    var gUrgente = esperado + TimeSpan.FromMinutes(cfg.ToleranciaMinutos);
 
-                        _state.Set(keyEstado, new
-                        {
-                            lunch_start     = segunda.Ts.ToString("o"),
-                            expected_return = esperado.ToString("o"),
-                            gatilho_aviso   = gAviso.ToString("o"),
-                            gatilho_urgente = gUrgente.ToString("o"),
-                        });
-                    }
+                    _state.Set(keyEstado, new
+                    {
+                        lunch_start     = segunda.Ts.ToString("o"),
+                        expected_return = esperado.ToString("o"),
+                        gatilho_aviso   = gAviso.ToString("o"),
+                        gatilho_urgente = gUrgente.ToString("o"),
+                    });
                 }
             }
         }
 
-        // Verificar alertas
+        // Se ainda não temos o estado de almoço, nada a fazer
         var rec = _state.Get<System.Text.Json.Nodes.JsonObject>(keyEstado);
         if (rec == null) return;
 
         var keyAviso   = $"{id}_almoco_aviso_{hoje:yyyyMMdd}";
         var keyUrgente = $"{id}_almoco_urgente_{hoje:yyyyMMdd}";
 
-        if (!DateTime.TryParse(rec["lunch_start"]?.ToString(),     out var lunchStart))    return;
-        if (!DateTime.TryParse(rec["expected_return"]?.ToString(),  out var expectedReturn)) return;
-        if (!DateTime.TryParse(rec["gatilho_aviso"]?.ToString(),    out var gA))             return;
-        if (!DateTime.TryParse(rec["gatilho_urgente"]?.ToString(),  out var gU))             return;
+        if (!DateTime.TryParse(rec["lunch_start"]?.ToString(),    out var lunchStart))    return;
+        if (!DateTime.TryParse(rec["expected_return"]?.ToString(), out var expectedReturn)) return;
+        if (!DateTime.TryParse(rec["gatilho_aviso"]?.ToString(),   out var gA))             return;
+        if (!DateTime.TryParse(rec["gatilho_urgente"]?.ToString(), out var gU))             return;
 
-        var saidaFmt   = lunchStart.ToString("HH:mm");
+        var saidaFmt    = lunchStart.ToString("HH:mm");
         var esperadoFmt = expectedReturn.ToString("HH:mm");
 
         if (now >= gU && !_state.Exists(keyUrgente))
         {
             _state.Set(keyUrgente, now.ToString("o"));
+            AudioService.PlayUrgente();
             AlertRequested?.Invoke(AlertTipo.Almoco, AlertNivel.Urgente, nome, saidaFmt, esperadoFmt);
             return;
         }
@@ -259,6 +269,7 @@ public class MonitorService
         if (now >= gA && !_state.Exists(keyAviso))
         {
             _state.Set(keyAviso, now.ToString("o"));
+            AudioService.PlayAviso();
             AlertRequested?.Invoke(AlertTipo.Almoco, AlertNivel.Aviso, nome, saidaFmt, esperadoFmt);
         }
     }
@@ -278,6 +289,8 @@ public class MonitorService
         var keyAviso   = $"{id}_saida_aviso_{hoje:yyyyMMdd}";
         var keyUrgente = $"{id}_saida_urgente_{hoje:yyyyMMdd}";
 
+        // BUG CORRIGIDO: Count == 0 é par, mas significa que não saiu NEM entrou.
+        // Saída final só é considerada quando há pelo menos 1 batida E o total é par.
         var temSaidaFinal = punches.Count > 0 && punches.Count % 2 == 0;
         if (temSaidaFinal) return;
 
@@ -290,6 +303,7 @@ public class MonitorService
         if (now >= gatilhoUrg && !_state.Exists(keyUrgente))
         {
             _state.Set(keyUrgente, now.ToString("o"));
+            AudioService.PlayUrgente();
             AlertRequested?.Invoke(AlertTipo.Saida, AlertNivel.Urgente, nome, horarioFmt, "");
             return;
         }
@@ -297,6 +311,7 @@ public class MonitorService
         if (now >= gatilhoAviso && !_state.Exists(keyAviso))
         {
             _state.Set(keyAviso, now.ToString("o"));
+            AudioService.PlayAviso();
             AlertRequested?.Invoke(AlertTipo.Saida, AlertNivel.Aviso, nome, horarioFmt, "");
         }
     }
