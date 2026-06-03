@@ -1,0 +1,6 @@
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto.exe
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto.dll
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto.deps.json
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto.runtimeconfig.json
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto.pdb
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\Hardcodet.NotifyIcon.Wpf.dll

@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "dgSpecHash": "uacunVZYEMo=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\rafael.souza\\Desktop\\BC - Rafael\\Projects\\Projects\\monitorPonto\\MonitorPonto\\MonitorPonto.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\rafael.souza\\.nuget\\packages\\hardcodet.notifyicon.wpf\\2.0.1\\hardcodet.notifyicon.wpf.2.0.1.nupkg.sha512",
+    "C:\\Users\\rafael.souza\\.nuget\\packages\\naudio\\2.3.0\\naudio.2.3.0.nupkg.sha512",
+    "C:\\Users\\rafael.souza\\.nuget\\packages\\naudio.asio\\2.3.0\\naudio.asio.2.3.0.nupkg.sha512",
+    "C:\\Users\\rafael.souza\\.nuget\\packages\\naudio.core\\2.3.0\\naudio.core.2.3.0.nupkg.sha512",
+    "C:\\Users\\rafael.souza\\.nuget\\packages\\naudio.midi\\2.3.0\\naudio.midi.2.3.0.nupkg.sha512",
+    "C:\\Users\\rafael.souza\\.nuget\\packages\\naudio.wasapi\\2.3.0\\naudio.wasapi.2.3.0.nupkg.sha512",
+    "C:\\Users\\rafael.souza\\.nuget\\packages\\naudio.winforms\\2.3.0\\naudio.winforms.2.3.0.nupkg.sha512",
+    "C:\\Users\\rafael.souza\\.nuget\\packages\\naudio.winmm\\2.3.0\\naudio.winmm.2.3.0.nupkg.sha512"
+  ],
+  "logs": []
+}

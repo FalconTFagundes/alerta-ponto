@@ -1,0 +1,48 @@
+C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto\bin\Release\net8.0-windows\MonitorPonto.exe
+C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto\bin\Release\net8.0-windows\MonitorPonto.deps.json
+C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto\bin\Release\net8.0-windows\MonitorPonto.runtimeconfig.json
+C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto\bin\Release\net8.0-windows\MonitorPonto.dll
+C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto\bin\Release\net8.0-windows\MonitorPonto.pdb
+C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto\bin\Release\net8.0-windows\Hardcodet.NotifyIcon.Wpf.dll
+C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto\obj\Release\net8.0-windows\MonitorPonto.csproj.AssemblyReference.cache
+C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto\obj\Release\net8.0-windows\App.baml
+C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto\obj\Release\net8.0-windows\App.g.cs
+C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto\obj\Release\net8.0-windows\MonitorPonto_MarkupCompile.cache
+C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto\obj\Release\net8.0-windows\MonitorPonto.g.resources
+C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto\obj\Release\net8.0-windows\MonitorPonto.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto\obj\Release\net8.0-windows\MonitorPonto.AssemblyInfoInputs.cache
+C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto\obj\Release\net8.0-windows\MonitorPonto.AssemblyInfo.cs
+C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto\obj\Release\net8.0-windows\MonitorPonto.csproj.CoreCompileInputs.cache
+C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto\obj\Release\net8.0-windows\MonitorPonto.sourcelink.json
+C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto\obj\Release\net8.0-windows\MonitorP.9470CC08.Up2Date
+C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto\obj\Release\net8.0-windows\MonitorPonto.dll
+C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto\obj\Release\net8.0-windows\refint\MonitorPonto.dll
+C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto\obj\Release\net8.0-windows\MonitorPonto.pdb
+C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto\obj\Release\net8.0-windows\MonitorPonto.genruntimeconfig.cache
+C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto\obj\Release\net8.0-windows\ref\MonitorPonto.dll
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\bin\Release\net8.0-windows\MonitorPonto.exe
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\bin\Release\net8.0-windows\MonitorPonto.deps.json
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\bin\Release\net8.0-windows\MonitorPonto.runtimeconfig.json
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\bin\Release\net8.0-windows\MonitorPonto.dll
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\bin\Release\net8.0-windows\MonitorPonto.pdb
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\bin\Release\net8.0-windows\Hardcodet.NotifyIcon.Wpf.dll
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\obj\Release\net8.0-windows\MonitorPonto.csproj.AssemblyReference.cache
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\obj\Release\net8.0-windows\App.baml
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\obj\Release\net8.0-windows\App.g.cs
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\obj\Release\net8.0-windows\MonitorPonto_MarkupCompile.cache
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\obj\Release\net8.0-windows\MonitorPonto.g.resources
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\obj\Release\net8.0-windows\MonitorPonto.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\obj\Release\net8.0-windows\MonitorPonto.AssemblyInfoInputs.cache
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\obj\Release\net8.0-windows\MonitorPonto.AssemblyInfo.cs
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\obj\Release\net8.0-windows\MonitorPonto.csproj.CoreCompileInputs.cache
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\obj\Release\net8.0-windows\MonitorPonto.sourcelink.json
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\obj\Release\net8.0-windows\MonitorP.9470CC08.Up2Date
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\obj\Release\net8.0-windows\MonitorPonto.dll
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\obj\Release\net8.0-windows\refint\MonitorPonto.dll
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\obj\Release\net8.0-windows\MonitorPonto.pdb
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\obj\Release\net8.0-windows\MonitorPonto.genruntimeconfig.cache
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\obj\Release\net8.0-windows\ref\MonitorPonto.dll
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\obj\Release\net8.0-windows\Views\AlertWindow.baml
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\obj\Release\net8.0-windows\Views\ConfigWindow.baml
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\obj\Release\net8.0-windows\Views\AlertWindow.g.cs
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\obj\Release\net8.0-windows\Views\ConfigWindow.g.cs

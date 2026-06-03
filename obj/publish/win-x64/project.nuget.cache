@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "ENIidigN9X4=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\rafael.souza\\Desktop\\BC - Rafael\\Projects\\Projects\\monitorPonto\\MonitorPonto\\MonitorPonto.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\rafael.souza\\.nuget\\packages\\hardcodet.notifyicon.wpf\\2.0.1\\hardcodet.notifyicon.wpf.2.0.1.nupkg.sha512",
+    "C:\\Users\\rafael.souza\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\10.0.8\\microsoft.netcore.app.runtime.win-x64.10.0.8.nupkg.sha512",
+    "C:\\Users\\rafael.souza\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\10.0.8\\microsoft.windowsdesktop.app.runtime.win-x64.10.0.8.nupkg.sha512",
+    "C:\\Users\\rafael.souza\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\10.0.8\\microsoft.aspnetcore.app.runtime.win-x64.10.0.8.nupkg.sha512"
+  ],
+  "logs": []
+}
