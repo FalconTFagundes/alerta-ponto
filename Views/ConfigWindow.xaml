@@ -124,7 +124,7 @@
                 <StackPanel>
                     <TextBlock Text="Monitor de Ponto" FontFamily="Segoe UI" FontSize="16"
                                FontWeight="Bold" Foreground="White"/>
-                    <TextBlock Text="BigCard — Configurações" FontFamily="Segoe UI"
+                    <TextBlock Text="Configurações" FontFamily="Segoe UI"
                                FontSize="12" Foreground="#A8C8E8"/>
                 </StackPanel>
             </StackPanel>
@@ -149,9 +149,6 @@
 
                         <Label Content="Domínio" Margin="0,8,0,0"/>
                         <TextBox x:Name="TxtDomain"/>
-
-                        <Label Content="Company ID" Margin="0,8,0,0"/>
-                        <TextBox x:Name="TxtCompanyId"/>
 
                         <TextBlock Text="IDENTIFICAÇÃO" Style="{StaticResource SecHeader}"/>
 

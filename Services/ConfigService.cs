@@ -46,7 +46,6 @@ public static class ConfigService
         return !string.IsNullOrWhiteSpace(config.Rhid.Username)
             && !string.IsNullOrWhiteSpace(config.Rhid.Password)
             && !string.IsNullOrWhiteSpace(config.Rhid.Domain)
-            && !string.IsNullOrWhiteSpace(config.Rhid.CompanyId)
             && config.Person.IdPerson > 0
             && !string.IsNullOrWhiteSpace(config.Person.Nome);
     }

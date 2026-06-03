@@ -35,7 +35,7 @@ public class RhidConfig
     public string Domain { get; set; } = "";
 
     [JsonPropertyName("company_id")]
-    public string CompanyId { get; set; } = "";
+    public string CompanyId { get; set; } = "55477";
 
     [JsonPropertyName("token_refresh_interval_minutes")]
     public int TokenRefreshMinutes { get; set; } = 50;
