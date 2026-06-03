@@ -488,3 +488,13 @@ C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\Monitor
 C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\obj\Release\net10.0-windows\win-x64\MonitorPonto.pdb
 C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\obj\Release\net10.0-windows\win-x64\MonitorPonto.genruntimeconfig.cache
 C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\obj\Release\net10.0-windows\win-x64\ref\MonitorPonto.dll
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\bin\Release\net10.0-windows\win-x64\Resources\alerta.wav
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\bin\Release\net10.0-windows\win-x64\Resources\urgente.wav
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\bin\Release\net10.0-windows\win-x64\NAudio.dll
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\bin\Release\net10.0-windows\win-x64\NAudio.Asio.dll
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\bin\Release\net10.0-windows\win-x64\NAudio.Core.dll
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\bin\Release\net10.0-windows\win-x64\NAudio.Midi.dll
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\bin\Release\net10.0-windows\win-x64\NAudio.Wasapi.dll
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\bin\Release\net10.0-windows\win-x64\NAudio.WinForms.dll
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\bin\Release\net10.0-windows\win-x64\NAudio.WinMM.dll
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\obj\Release\net10.0-windows\win-x64\MonitorPonto_Content.g.cs

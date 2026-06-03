@@ -2,20 +2,20 @@
   "rhid": {
     "base_url": "https://www.rhid.com.br/v2/api.svc",
     "repp_url": "https://repp.rhid.com.br",
-    "username": "",
-    "password": "",
-    "domain": "",
-    "company_id": "",
+    "username": "rafael.souza@bigcard.com.br",
+    "password": "9630",
+    "domain": "bigcard",
+    "company_id": "55477",
     "token_refresh_interval_minutes": 50
   },
   "person": {
-    "id_person": 0,
-    "nome": ""
+    "id_person": 104,
+    "nome": "Rafael de Souza Fagundes"
   },
   "schedule": {
     "horario_ativo": {
-      "inicio": "07:00",
-      "fim": "19:00"
+      "inicio": "07:50",
+      "fim": "18:30"
     },
     "entrada": {
       "enabled": true,
@@ -25,9 +25,9 @@
     },
     "almoco": {
       "enabled": true,
-      "janela_inicio": "11:00",
-      "janela_fim": "14:00",
-      "duracao_minutos": 90,
+      "janela_inicio": "11:30",
+      "janela_fim": "12:30",
+      "duracao_minutos": 60,
       "antecedencia_minutos": 1,
       "tolerancia_minutos": 3
     },

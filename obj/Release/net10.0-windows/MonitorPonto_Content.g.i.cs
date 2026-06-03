@@ -9,5 +9,6 @@
 //------------------------------------------------------------------------------
 
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("resources/alerta.wav")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("resources/urgente.wav")]
 
 

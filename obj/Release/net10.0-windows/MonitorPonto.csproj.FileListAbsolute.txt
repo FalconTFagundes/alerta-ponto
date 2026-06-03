@@ -33,3 +33,4 @@ C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\Monitor
 C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\bin\Release\net10.0-windows\NAudio.WinMM.dll
 C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\bin\Release\net10.0-windows\Resources\alerta.wav
 C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\obj\Release\net10.0-windows\MonitorPonto_Content.g.cs
+C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\bin\Release\net10.0-windows\Resources\urgente.wav

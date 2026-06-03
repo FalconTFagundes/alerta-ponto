@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MonitorPonto")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a54a6c268ecc183f3be2d99501187db444916dc8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8e22251be6d164bcb79a77e0c675be435e60ede8")]
 [assembly: System.Reflection.AssemblyProductAttribute("MonitorPonto")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MonitorPonto")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

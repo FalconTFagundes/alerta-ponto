@@ -1,9 +1,10 @@
-using MonitorPonto.Services;
+using System.Media;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using MonitorPonto.Models;
+using MonitorPonto.Services;
 
 namespace MonitorPonto.Views;
 
@@ -18,25 +19,29 @@ public partial class AlertWindow : Window
         InitializeComponent();
         _urgente = nivel == AlertNivel.Urgente;
         ConfigurarVisual(tipo, nivel, nome, info1, info2);
-        StartSound();
-        StartClock();
-        Loaded += (_, _) => BtnOk.Focus();
+        Loaded += (_, _) =>
+        {
+            StartSound();
+            StartClock();
+            BtnOk.Focus();
+        };
     }
 
     // ── Visual ──────────────────────────────────────────────────────────
 
-    private void ConfigurarVisual(AlertTipo tipo, AlertNivel nivel, string nome, string info1, string info2)
+    private void ConfigurarVisual(AlertTipo tipo, AlertNivel nivel,
+        string nome, string info1, string info2)
     {
         string bg, accent, icon, titulo, subtitulo, btnText;
 
         if (nivel == AlertNivel.Urgente)
         {
-            bg       = "#3d0000";
-            accent   = "#FF1A1A";
-            icon     = "🚨";
-            titulo   = "VOCÊ AINDA NÃO BATEU O PONTO!!";
+            bg        = "#3d0000";
+            accent    = "#FF1A1A";
+            icon      = "🚨";
+            titulo    = "VOCÊ AINDA NÃO BATEU O PONTO!!";
             subtitulo = "O prazo já passou! Vá bater o ponto agora.";
-            btnText  = "✅  JÁ FUI BATER O PONTO";
+            btnText   = "✅  JÁ FUI BATER O PONTO";
         }
         else
         {
@@ -61,15 +66,30 @@ public partial class AlertWindow : Window
             };
         }
 
-        GridRoot.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(bg));
+        GridRoot.Background = new SolidColorBrush(
+            (Color)ColorConverter.ConvertFromString(bg));
 
         TxtIcon.Text      = icon;
         TxtTitulo.Text    = titulo;
-        TxtTitulo.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(accent));
+        TxtTitulo.Foreground = new SolidColorBrush(
+            (Color)ColorConverter.ConvertFromString(accent));
         TxtSubtitulo.Text = subtitulo;
         TxtNome.Text      = $"👤  {nome}";
         BtnOk.Content     = btnText;
-        BtnOk.Background  = new SolidColorBrush((Color)ColorConverter.ConvertFromString(accent));
+
+        // Cor do botão com animação de pulso
+        var accentColor = (Color)ColorConverter.ConvertFromString(accent);
+        var bgColor     = (Color)ColorConverter.ConvertFromString(bg);
+        var brush       = new SolidColorBrush(accentColor);
+        BtnOk.Background = brush;
+
+        var anim = new ColorAnimation(accentColor, bgColor,
+            new Duration(TimeSpan.FromMilliseconds(_urgente ? 350 : 650)))
+        {
+            AutoReverse    = true,
+            RepeatBehavior = RepeatBehavior.Forever
+        };
+        brush.BeginAnimation(SolidColorBrush.ColorProperty, anim);
 
         // Info contextual
         if (tipo == AlertTipo.Almoco && !string.IsNullOrEmpty(info1))
@@ -82,20 +102,6 @@ public partial class AlertWindow : Window
             TxtInfo1.Text = $"🕐  Horário previsto: {info1}";
             TxtInfo2.Text = "";
         }
-
-        // Animação de pulso no botão
-        var animation = new ColorAnimation(
-            (Color)ColorConverter.ConvertFromString(accent),
-            (Color)ColorConverter.ConvertFromString(bg),
-            new Duration(TimeSpan.FromMilliseconds(_urgente ? 400 : 700)))
-        {
-            AutoReverse  = true,
-            RepeatBehavior = RepeatBehavior.Forever
-        };
-
-        var brush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(accent));
-        BtnOk.Background = brush;
-        brush.BeginAnimation(SolidColorBrush.ColorProperty, animation);
     }
 
     // ── Relógio ─────────────────────────────────────────────────────────
@@ -103,7 +109,7 @@ public partial class AlertWindow : Window
     private void StartClock()
     {
         TxtAgora.Text = $"🕐  Agora: {DateTime.Now:HH:mm}";
-        _clockTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(5) };
+        _clockTimer   = new DispatcherTimer { Interval = TimeSpan.FromSeconds(5) };
         _clockTimer.Tick += (_, _) => TxtAgora.Text = $"🕐  Agora: {DateTime.Now:HH:mm}";
         _clockTimer.Start();
     }
@@ -113,23 +119,32 @@ public partial class AlertWindow : Window
     private void StartSound()
     {
         // Toca imediatamente
-        AudioService.PlayAlert();
+        TocarSom();
 
-        // Repete em loop enquanto a janela estiver aberta
-        _soundTimer = new DispatcherTimer
-        {
-            Interval = TimeSpan.FromSeconds(_urgente ? 2 : 3)
-        };
-        _soundTimer.Tick += (_, _) => AudioService.PlayAlert();
+        // Intervalo: urgente = 2s após fim do áudio, aviso = 3s
+        var interval = TimeSpan.FromSeconds(_urgente ? 2 : 3);
+        _soundTimer  = new DispatcherTimer { Interval = interval };
+        _soundTimer.Tick += (_, _) => TocarSom();
         _soundTimer.Start();
+    }
+
+    private void TocarSom()
+    {
+        if (_urgente)
+            AudioService.PlayUrgente();
+        else
+            AudioService.PlayAviso();
     }
 
     // ── Fechar ───────────────────────────────────────────────────────────
 
-    private void BtnOk_Click(object sender, RoutedEventArgs e)
+    private void BtnOk_Click(object sender, RoutedEventArgs e) => Fechar();
+
+    private void Fechar()
     {
         _soundTimer?.Stop();
         _clockTimer?.Stop();
+        AudioService.StopAll();   // para o áudio imediatamente
         Close();
     }
 
@@ -137,6 +152,7 @@ public partial class AlertWindow : Window
     {
         _soundTimer?.Stop();
         _clockTimer?.Stop();
+        AudioService.StopAll();
         base.OnClosing(e);
     }
 }

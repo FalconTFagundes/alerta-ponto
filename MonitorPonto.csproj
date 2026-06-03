@@ -12,22 +12,22 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\alerta.wav" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Resources\alerta.wav">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.1" />
     <PackageReference Include="NAudio" Version="2.3.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Resources\relogio.ico" />
+  </ItemGroup>
+
+  <!-- Copia os áudios para a pasta de saída automaticamente -->
+  <ItemGroup>
+    <Content Include="Resources\alerta.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\urgente.wav" Condition="Exists('Resources\urgente.wav')">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
