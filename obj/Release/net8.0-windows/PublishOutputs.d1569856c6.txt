@@ -1,6 +1,0 @@
-C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto.exe
-C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto.dll
-C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto.deps.json
-C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto.runtimeconfig.json
-C:\Users\rafael.souza\Desktop\alerta-ponto\MonitorPonto.pdb
-C:\Users\rafael.souza\Desktop\alerta-ponto\Hardcodet.NotifyIcon.Wpf.dll
