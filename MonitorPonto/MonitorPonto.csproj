@@ -20,9 +20,8 @@
     <Resource Include="Resources\relogio.ico" />
   </ItemGroup>
 
-  <!-- Copia os áudios para a pasta de saída automaticamente -->
   <ItemGroup>
-    <Content Include="Resources\alerta.wav">
+    <Content Include="Resources\alerta.wav" Condition="Exists('Resources\alerta.wav')">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\urgente.wav" Condition="Exists('Resources\urgente.wav')">

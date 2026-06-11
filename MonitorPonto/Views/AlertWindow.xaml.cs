@@ -11,30 +11,32 @@ public partial class AlertWindow : Window
 {
     private DispatcherTimer? _soundTimer;
     private DispatcherTimer? _clockTimer;
+    private DispatcherTimer? _countdownTimer;
     private DispatcherTimer? _autoCloseTimer;
     private bool _urgente;
-    private bool _closedByUser = false;
+    private int _secondsLeft;
 
-    public bool ClosedByUser => _closedByUser;
+    public bool ClosedByUser { get; private set; } = false;
 
-    // Duração máxima da janela fullscreen em segundos
     private const int AutoCloseSecs = 40;
 
-    public AlertWindow(AlertTipo tipo, AlertNivel nivel, string nome, string info1, string info2)
+    public AlertWindow(AlertTipo tipo, AlertNivel nivel,
+        string nome, string info1, string info2)
     {
         InitializeComponent();
-        _urgente = nivel == AlertNivel.Urgente;
+        _urgente     = nivel == AlertNivel.Urgente;
+        _secondsLeft = AutoCloseSecs;
         ConfigurarVisual(tipo, nivel, nome, info1, info2);
         Loaded += (_, _) =>
         {
             StartSound();
             StartClock();
-            StartAutoClose();
+            StartCountdown();
             BtnOk.Focus();
         };
     }
 
-    // ── Visual ──────────────────────────────────────────────────────────
+    // ── Visual ───────────────────────────────────────────────────────────
 
     private void ConfigurarVisual(AlertTipo tipo, AlertNivel nivel,
         string nome, string info1, string info2)
@@ -58,24 +60,22 @@ public partial class AlertWindow : Window
                     "HORA DE BATER A ENTRADA!",
                     "Você ainda não bateu o ponto de entrada.",
                     "✅  JÁ FUI BATER O PONTO"),
-                AlertTipo.Almoco => ("#1a1a2e", "#E94560", "⏰",
+                AlertTipo.Almoco  => ("#1a1a2e", "#E94560", "⏰",
                     "HORA DE RETORNAR DO ALMOÇO!",
                     "Você não retornou do almoço no horário.",
                     "✅  JÁ FUI BATER O PONTO"),
-                AlertTipo.Saida => ("#1b4332", "#52B788", "🌆",
+                AlertTipo.Saida   => ("#1b4332", "#52B788", "🌆",
                     "HORA DE BATER A SAÍDA!",
                     "Não esqueça de bater o ponto de saída.",
                     "✅  JÁ FUI BATER O PONTO"),
-                _ => ("#1a1a2e", "#E94560", "⏰", "ATENÇÃO!", "", "✅  OK")
+                _                 => ("#1a1a2e", "#E94560", "⏰", "ATENÇÃO!", "", "✅  OK")
             };
         }
 
-        GridRoot.Background = new SolidColorBrush(
-            (Color)ColorConverter.ConvertFromString(bg));
+        GridRoot.Background  = new SolidColorBrush((Color)ColorConverter.ConvertFromString(bg));
         TxtIcon.Text         = icon;
         TxtTitulo.Text       = titulo;
-        TxtTitulo.Foreground = new SolidColorBrush(
-            (Color)ColorConverter.ConvertFromString(accent));
+        TxtTitulo.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(accent));
         TxtSubtitulo.Text    = subtitulo;
         TxtNome.Text         = $"👤  {nome}";
         BtnOk.Content        = btnText;
@@ -88,8 +88,7 @@ public partial class AlertWindow : Window
         var anim = new ColorAnimation(accentColor, bgColor,
             new Duration(TimeSpan.FromMilliseconds(_urgente ? 350 : 650)))
         {
-            AutoReverse    = true,
-            RepeatBehavior = RepeatBehavior.Forever
+            AutoReverse = true, RepeatBehavior = RepeatBehavior.Forever
         };
         brush.BeginAnimation(SolidColorBrush.ColorProperty, anim);
 
@@ -105,7 +104,7 @@ public partial class AlertWindow : Window
         }
     }
 
-    // ── Relógio ─────────────────────────────────────────────────────────
+    // ── Relógio ──────────────────────────────────────────────────────────
 
     private void StartClock()
     {
@@ -115,13 +114,48 @@ public partial class AlertWindow : Window
         _clockTimer.Start();
     }
 
-    // ── Som ─────────────────────────────────────────────────────────────
+    // ── Countdown ────────────────────────────────────────────────────────
+
+    private void StartCountdown()
+    {
+        AtualizarCountdown();
+        _countdownTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+        _countdownTimer.Tick += (_, _) =>
+        {
+            _secondsLeft--;
+            AtualizarCountdown();
+        };
+        _countdownTimer.Start();
+
+        // Auto-close após AutoCloseSecs
+        _autoCloseTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromSeconds(AutoCloseSecs)
+        };
+        _autoCloseTimer.Tick += (_, _) =>
+        {
+            _autoCloseTimer.Stop();
+            Fechar(byUser: false);
+        };
+        _autoCloseTimer.Start();
+    }
+
+    private void AtualizarCountdown()
+    {
+        TxtCountdown.Text = _secondsLeft > 0
+            ? $"Esta janela fechará em {_secondsLeft}s"
+            : "Fechando...";
+    }
+
+    // ── Som ──────────────────────────────────────────────────────────────
 
     private void StartSound()
     {
         TocarSom();
-        var interval = TimeSpan.FromSeconds(_urgente ? 2 : 3);
-        _soundTimer  = new DispatcherTimer { Interval = interval };
+        _soundTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromSeconds(_urgente ? 2 : 3)
+        };
         _soundTimer.Tick += (_, _) => TocarSom();
         _soundTimer.Start();
     }
@@ -132,22 +166,6 @@ public partial class AlertWindow : Window
         else          AudioService.PlayAviso();
     }
 
-    // ── Auto-close após 40s ──────────────────────────────────────────────
-
-    private void StartAutoClose()
-    {
-        _autoCloseTimer = new DispatcherTimer
-        {
-            Interval = TimeSpan.FromSeconds(AutoCloseSecs)
-        };
-        _autoCloseTimer.Tick += (_, _) =>
-        {
-            _autoCloseTimer.Stop();
-            Fechar(byUser: false); // fechou por timeout
-        };
-        _autoCloseTimer.Start();
-    }
-
     // ── Fechar ───────────────────────────────────────────────────────────
 
     private void BtnOk_Click(object sender, RoutedEventArgs e)
@@ -155,9 +173,10 @@ public partial class AlertWindow : Window
 
     private void Fechar(bool byUser)
     {
-        _closedByUser = byUser;
+        ClosedByUser = byUser;
         _soundTimer?.Stop();
         _clockTimer?.Stop();
+        _countdownTimer?.Stop();
         _autoCloseTimer?.Stop();
         AudioService.StopAll();
         Close();
@@ -167,6 +186,7 @@ public partial class AlertWindow : Window
     {
         _soundTimer?.Stop();
         _clockTimer?.Stop();
+        _countdownTimer?.Stop();
         _autoCloseTimer?.Stop();
         AudioService.StopAll();
         base.OnClosing(e);

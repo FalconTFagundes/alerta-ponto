@@ -1,0 +1,168 @@
+<Window x:Class="MonitorPonto.Views.PunchStatusWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Monitor de Ponto — Registros de Hoje"
+        Width="480" Height="520"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Background="#F5F7FA">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Cabeçalho -->
+        <Border Grid.Row="0" Background="#1a3a5c" Padding="20,14">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="📋" FontSize="22" Foreground="White"
+                           FontFamily="Segoe UI Emoji" VerticalAlignment="Center"
+                           Margin="0,0,10,0"/>
+                <StackPanel>
+                    <TextBlock Text="Registros de Ponto" FontFamily="Segoe UI"
+                               FontSize="16" FontWeight="Bold" Foreground="White"/>
+                    <TextBlock x:Name="TxtData" FontFamily="Segoe UI"
+                               FontSize="12" Foreground="#A8C8E8"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Status resumido -->
+        <Border Grid.Row="1" Background="#E8F4FD" BorderBrush="#2d6a9f"
+                BorderThickness="0,0,0,1" Padding="20,12">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBlock x:Name="TxtNome"
+                           FontFamily="Segoe UI" FontSize="14" FontWeight="SemiBold"
+                           Foreground="#1a3a5c" VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Lista de batidas -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Margin="0">
+            <StackPanel x:Name="PanelBatidas" Margin="20,16,20,16">
+
+                <!-- Loading -->
+                <TextBlock x:Name="TxtLoading"
+                           Text="⏳ Consultando registros..."
+                           FontFamily="Segoe UI" FontSize="14"
+                           Foreground="#888888" HorizontalAlignment="Center"
+                           Margin="0,40,0,0"/>
+
+                <!-- Mensagem vazia -->
+                <TextBlock x:Name="TxtVazio"
+                           Text="Nenhum registro encontrado para hoje."
+                           FontFamily="Segoe UI" FontSize="14"
+                           Foreground="#888888" HorizontalAlignment="Center"
+                           Margin="0,40,0,0" Visibility="Collapsed"/>
+
+                <!-- Container dos registros -->
+                <ItemsControl x:Name="ListaBatidas" Visibility="Collapsed">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="0,0,0,8" CornerRadius="8"
+                                    Background="White" BorderThickness="0"
+                                    Padding="16,12">
+                                <Border.Effect>
+                                    <DropShadowEffect ShadowDepth="1" BlurRadius="4"
+                                                      Opacity="0.1" Color="Black"/>
+                                </Border.Effect>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Ícone -->
+                                    <TextBlock Grid.Column="0"
+                                               Text="{Binding Icone}"
+                                               FontFamily="Segoe UI Emoji"
+                                               FontSize="28" VerticalAlignment="Center"
+                                               Margin="0,0,14,0"/>
+
+                                    <!-- Tipo -->
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Tipo}"
+                                                   FontFamily="Segoe UI" FontSize="14"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="#2d2d2d"/>
+                                        <TextBlock Text="{Binding Sequencia}"
+                                                   FontFamily="Segoe UI" FontSize="11"
+                                                   Foreground="#888888"/>
+                                    </StackPanel>
+
+                                    <!-- Hora -->
+                                    <TextBlock Grid.Column="2"
+                                               Text="{Binding Hora}"
+                                               FontFamily="Segoe UI" FontSize="22"
+                                               FontWeight="Bold"
+                                               Foreground="{Binding Cor}"
+                                               VerticalAlignment="Center"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Rodapé -->
+        <Border Grid.Row="3" Background="White" BorderBrush="#E0E0E0"
+                BorderThickness="0,1,0,0" Padding="20,12">
+            <DockPanel>
+                <TextBlock x:Name="TxtUltimaAtualizacao"
+                           FontFamily="Segoe UI" FontSize="11"
+                           Foreground="#AAAAAA" VerticalAlignment="Center"
+                           DockPanel.Dock="Left"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button x:Name="BtnAtualizar"
+                            Content="🔄  Atualizar"
+                            FontFamily="Segoe UI" FontSize="13"
+                            Background="#2d6a9f" Foreground="White"
+                            BorderThickness="0" Padding="16,8"
+                            Cursor="Hand" Margin="0,0,10,0"
+                            Click="BtnAtualizar_Click">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}"
+                                        CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#1a3a5c"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    <Button Content="Fechar"
+                            FontFamily="Segoe UI" FontSize="13"
+                            Background="#E0E0E0" Foreground="#444444"
+                            BorderThickness="0" Padding="16,8"
+                            Cursor="Hand" Click="BtnFechar_Click">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}"
+                                        CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#CCCCCC"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>

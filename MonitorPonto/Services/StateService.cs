@@ -1,78 +1,57 @@
 using System.IO;
 using System.Text.Json;
-using MonitorPonto.Models;
+using System.Text.Json.Nodes;
 
 namespace MonitorPonto.Services;
 
 public class StateService
 {
-    private readonly string _statePath;
+    private readonly string _path;
     private readonly JsonSerializerOptions _opts = new() { WriteIndented = true };
 
     public StateService()
     {
-        _statePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "state.json");
+        _path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "state.json");
     }
 
-    private Dictionary<string, object> ReadAll()
+    private Dictionary<string, JsonNode?> Read()
     {
         try
         {
-            if (!File.Exists(_statePath)) return new();
-            var json = File.ReadAllText(_statePath);
-            return JsonSerializer.Deserialize<Dictionary<string, object>>(json) ?? new();
+            if (!File.Exists(_path)) return new();
+            var json = File.ReadAllText(_path);
+            return JsonSerializer.Deserialize<Dictionary<string, JsonNode?>>(json) ?? new();
         }
         catch { return new(); }
     }
 
-    private void WriteAll(Dictionary<string, object> data)
+    private void Write(Dictionary<string, JsonNode?> data)
     {
-        try
-        {
-            var json = JsonSerializer.Serialize(data, _opts);
-            File.WriteAllText(_statePath, json);
-        }
+        try { File.WriteAllText(_path, JsonSerializer.Serialize(data, _opts)); }
         catch { }
     }
 
-    public bool Exists(string key)
-    {
-        return ReadAll().ContainsKey(key);
-    }
+    public bool Exists(string key) => Read().ContainsKey(key);
 
     public void Set(string key, object value)
     {
-        var data = ReadAll();
-        data[key] = value;
-        WriteAll(data);
+        var data = Read();
+        data[key] = JsonNode.Parse(JsonSerializer.Serialize(value));
+        Write(data);
     }
 
     public T? Get<T>(string key)
     {
-        var data = ReadAll();
-        if (!data.TryGetValue(key, out var val)) return default;
-        try
-        {
-            var json = JsonSerializer.Serialize(val);
-            return JsonSerializer.Deserialize<T>(json);
-        }
+        var data = Read();
+        if (!data.TryGetValue(key, out var val) || val == null) return default;
+        try { return JsonSerializer.Deserialize<T>(val.ToJsonString()); }
         catch { return default; }
     }
 
     public void Remove(string key)
     {
-        var data = ReadAll();
+        var data = Read();
         data.Remove(key);
-        WriteAll(data);
-    }
-
-    public void MarkNotified(string key)
-    {
-        Set(key + "_notified", true);
-    }
-
-    public bool IsNotified(string key)
-    {
-        return Exists(key + "_notified");
+        Write(data);
     }
 }

@@ -9,7 +9,7 @@ public static class ConfigService
     private static readonly string ConfigPath = Path.Combine(
         AppDomain.CurrentDomain.BaseDirectory, "config.json");
 
-    private static readonly JsonSerializerOptions JsonOpts = new()
+    private static readonly JsonSerializerOptions Opts = new()
     {
         WriteIndented = true,
         PropertyNameCaseInsensitive = true
@@ -21,33 +21,25 @@ public static class ConfigService
         {
             if (!File.Exists(ConfigPath))
             {
-                var defaultCfg = new AppConfig();
-                Save(defaultCfg);
-                return defaultCfg;
+                var def = new AppConfig();
+                Save(def);
+                return def;
             }
-
             var json = File.ReadAllText(ConfigPath);
-            return JsonSerializer.Deserialize<AppConfig>(json, JsonOpts) ?? new AppConfig();
+            return JsonSerializer.Deserialize<AppConfig>(json, Opts) ?? new AppConfig();
         }
-        catch
-        {
-            return new AppConfig();
-        }
+        catch { return new AppConfig(); }
     }
 
     public static void Save(AppConfig config)
     {
-        var json = JsonSerializer.Serialize(config, JsonOpts);
+        var json = JsonSerializer.Serialize(config, Opts);
         File.WriteAllText(ConfigPath, json);
     }
 
     public static bool IsConfigured(AppConfig config)
-    {
-        return !string.IsNullOrWhiteSpace(config.Rhid.Username)
-            && !string.IsNullOrWhiteSpace(config.Rhid.Password)
-            && !string.IsNullOrWhiteSpace(config.Rhid.Domain)
-            && !string.IsNullOrWhiteSpace(config.Rhid.CompanyId)
-            && config.Person.IdPerson > 0
-            && !string.IsNullOrWhiteSpace(config.Person.Nome);
-    }
+        => !string.IsNullOrWhiteSpace(config.Rhid.Username)
+        && !string.IsNullOrWhiteSpace(config.Rhid.Password)
+        && config.Person.IdPerson > 0
+        && !string.IsNullOrWhiteSpace(config.Person.Nome);
 }

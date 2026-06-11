@@ -9,48 +9,13 @@ public class MonitorService
     private AppConfig _config;
     private CancellationTokenSource? _cts;
 
-    public event Action<AlertTipo, AlertNivel, string, string, string>? AlertRequested;
-
-    // Gerenciadores de ciclo ativos por tipo de evento
     private readonly Dictionary<string, AlertCycleManager> _cycles = new();
-
-    public void FireAlert(AlertTipo tipo, AlertNivel nivel, string nome, string info1, string info2)
-    {
-        var key = $"{tipo}_{nivel}";
-
-        // Não inicia novo ciclo se já tem um rodando
-        if (_cycles.ContainsKey(key)) return;
-
-        var manager = new AlertCycleManager(tipo, nivel, nome, info1, info2);
-        _cycles[key] = manager;
-        manager.Start();
-
-        // Remove do dicionário quando terminar
-        Task.Run(async () =>
-        {
-            await Task.Delay(TimeSpan.FromMinutes(60)); // limpeza após 1h
-            _cycles.Remove(key);
-        });
-    }
-
-    public void StopAllCycles()
-    {
-        foreach (var c in _cycles.Values) c.Stop();
-        _cycles.Clear();
-    }
-    // tipo, nivel, nome, info1 (saida/horario), info2 (esperado)
 
     public MonitorService(AppConfig config)
     {
         _config = config;
         _rhid   = new RhidService(config);
         _state  = new StateService();
-    }
-
-    public void UpdateConfig(AppConfig config)
-    {
-        _config = config;
-        _rhid.UpdateConfig(config);
     }
 
     public void Start()
@@ -64,7 +29,13 @@ public class MonitorService
         _cts?.Cancel();
     }
 
-    // ── Loop principal ──────────────────────────────────────────────────
+    public void StopAllCycles()
+    {
+        foreach (var c in _cycles.Values) c.Stop();
+        _cycles.Clear();
+    }
+
+    // ── Loop principal ───────────────────────────────────────────────────
 
     private async Task LoopAsync(CancellationToken ct)
     {
@@ -72,7 +43,7 @@ public class MonitorService
         {
             try
             {
-                if (DentroDoHorarioAtivo())
+                if (DentroHorarioAtivo())
                 {
                     var records = await _rhid.GetPunchRecordsTodayAsync();
                     ProcessRecords(records);
@@ -81,13 +52,14 @@ public class MonitorService
             catch { }
 
             var sleep = CalcSleep();
-            await Task.Delay(TimeSpan.FromSeconds(sleep), ct).ContinueWith(_ => { });
+            try { await Task.Delay(TimeSpan.FromSeconds(sleep), ct); }
+            catch (TaskCanceledException) { break; }
         }
     }
 
-    // ── Horário ativo ───────────────────────────────────────────────────
+    // ── Horário ativo ────────────────────────────────────────────────────
 
-    private bool DentroDoHorarioAtivo()
+    private bool DentroHorarioAtivo()
     {
         try
         {
@@ -99,17 +71,17 @@ public class MonitorService
         catch { return true; }
     }
 
-    // ── Polling inteligente ─────────────────────────────────────────────
+    // ── Polling inteligente ──────────────────────────────────────────────
 
     private int CalcSleep()
     {
-        var now    = DateTime.Now;
-        var hoje   = DateOnly.FromDateTime(now);
-        var janela = TimeSpan.FromMinutes(_config.Monitor.JanelaProximaMinutos);
+        var now   = DateTime.Now;
+        var hoje  = DateOnly.FromDateTime(now);
+        var jan   = TimeSpan.FromMinutes(_config.Monitor.JanelaProximaMinutos);
 
         var gatilhos = new List<DateTime>();
 
-        void AddGatilhos(string horario, int antec, int toler)
+        void Add(string horario, int antec, int toler)
         {
             try
             {
@@ -121,211 +93,243 @@ public class MonitorService
         }
 
         var e = _config.Schedule.Entrada;
-        if (e.Enabled) AddGatilhos(e.Horario, e.AntecedenciaMinutos, e.ToleranciaMinutos);
+        if (e.Enabled) Add(e.Horario, e.AntecedenciaMinutos, e.ToleranciaMinutos);
 
         var s = _config.Schedule.Saida;
-        if (s.Enabled) AddGatilhos(s.Horario, s.AntecedenciaMinutos, s.ToleranciaMinutos);
+        if (s.Enabled) Add(s.Horario, s.AntecedenciaMinutos, s.ToleranciaMinutos);
 
         var a = _config.Schedule.Almoco;
         if (a.Enabled)
         {
             try
             {
-                var fimJanela = hoje.ToDateTime(TimeOnly.Parse(a.JanelaFim));
-                var baseAlm   = fimJanela + TimeSpan.FromMinutes(a.DuracaoMinutos);
-                gatilhos.Add(baseAlm - TimeSpan.FromMinutes(a.AntecedenciaMinutos));
-                gatilhos.Add(baseAlm + TimeSpan.FromMinutes(a.ToleranciaMinutos));
+                var fim = hoje.ToDateTime(TimeOnly.Parse(a.JanelaFim))
+                    + TimeSpan.FromMinutes(a.DuracaoMinutos);
+                gatilhos.Add(fim - TimeSpan.FromMinutes(a.AntecedenciaMinutos));
+                gatilhos.Add(fim + TimeSpan.FromMinutes(a.ToleranciaMinutos));
             }
             catch { }
         }
 
         foreach (var g in gatilhos)
-        {
-            if (Math.Abs((g - now).TotalSeconds) <= janela.TotalSeconds)
+            if (Math.Abs((g - now).TotalSeconds) <= jan.TotalSeconds)
                 return _config.Monitor.PollingProximoSeconds;
-        }
 
         return _config.Monitor.PollingIntervalSeconds;
     }
 
-    // ── Processar batidas ───────────────────────────────────────────────
+    // ── Processar batidas ────────────────────────────────────────────────
 
     private void ProcessRecords(List<PunchRecord> records)
     {
         var idPerson = _config.Person.IdPerson.ToString();
         var record   = records.FirstOrDefault(r => r.EmployeeId == idPerson);
-
-        var hoje   = DateTime.Now.ToString("yyyy-MM-dd");
-        var punches = new List<(DateTime Ts, string Type)>();
+        var hoje     = DateTime.Now.ToString("yyyy-MM-dd");
+        var punches  = new List<(DateTime Ts, string Type)>();
 
         if (record != null)
         {
             foreach (var p in record.Punches)
-            {
                 if (DateTime.TryParse($"{record.Date} {p.Time}", out var ts))
                     punches.Add((ts, p.Type));
-            }
             punches = punches.OrderBy(x => x.Ts).ToList();
         }
 
-        CheckEntrada(punches);
-        CheckAlmoco(punches, hoje);
-        CheckSaida(punches);
+        // Separa por tipo real (ignora duplicidades do mesmo tipo consecutivo)
+        var entradas = punches.Where(p => p.Type == "ENTRADA").ToList();
+        var saidas   = punches.Where(p => p.Type == "SAIDA").ToList();
+
+        CheckEntrada(entradas);
+        CheckAlmoco(entradas, saidas, hoje);
+        CheckSaida(entradas, saidas);
     }
 
-    // ── ENTRADA ─────────────────────────────────────────────────────────
+    // ── ENTRADA ──────────────────────────────────────────────────────────
 
-    private void CheckEntrada(List<(DateTime Ts, string Type)> punches)
+    private void CheckEntrada(List<(DateTime Ts, string Type)> entradas)
     {
         var cfg = _config.Schedule.Entrada;
         if (!cfg.Enabled) return;
 
-        var id    = _config.Person.IdPerson;
-        var nome  = _config.Person.Nome;
-        var hoje  = DateTime.Now.Date;
         var now   = DateTime.Now;
+        var hoje  = now.Date;
+        var keyA  = $"{_config.Person.IdPerson}_entrada_aviso_{hoje:yyyyMMdd}";
+        var keyU  = $"{_config.Person.IdPerson}_entrada_urgente_{hoje:yyyyMMdd}";
 
-        var keyAviso  = $"{id}_entrada_aviso_{hoje:yyyyMMdd}";
-        var keyUrgent = $"{id}_entrada_urgente_{hoje:yyyyMMdd}";
+        // Já tem pelo menos 1 entrada real → não alerta
+        if (entradas.Count >= 1) return;
+        var punches = entradas; // compatibilidade
 
-        var temEntrada = punches.Count >= 1;
-        if (temEntrada) return;
+        if (!TimeOnly.TryParse(cfg.Horario, out var t)) return;
+        var base_     = hoje.Add(t.ToTimeSpan());
+        var gatAviso  = base_ - TimeSpan.FromMinutes(cfg.AntecedenciaMinutos);
+        var gatUrg    = base_ + TimeSpan.FromMinutes(cfg.ToleranciaMinutos);
+        var nome      = _config.Person.Nome;
+        var horFmt    = t.ToString("HH:mm");
 
-        if (!TimeOnly.TryParse(cfg.Horario, out var horarioTime)) return;
-        var horarioDt     = hoje.Add(horarioTime.ToTimeSpan());
-        var gatilhoAviso  = horarioDt - TimeSpan.FromMinutes(cfg.AntecedenciaMinutos);
-        var gatilhoUrgent = horarioDt + TimeSpan.FromMinutes(cfg.ToleranciaMinutos);
-        var horarioFmt    = horarioTime.ToString("HH:mm");
-
-        if (now >= gatilhoUrgent && !_state.Exists(keyUrgent))
+        if (now >= gatUrg && !_state.Exists(keyU))
         {
-            _state.Set(keyUrgent, now.ToString("o"));
-            FireAlert(AlertTipo.Entrada, AlertNivel.Urgente, nome, horarioFmt, "");
+            _state.Set(keyU, now.ToString("o"));
+            FireAlert(AlertTipo.Entrada, AlertNivel.Urgente, nome, horFmt, "");
             return;
         }
-
-        if (now >= gatilhoAviso && !_state.Exists(keyAviso))
+        if (now >= gatAviso && !_state.Exists(keyA))
         {
-            _state.Set(keyAviso, now.ToString("o"));
-            FireAlert(AlertTipo.Entrada, AlertNivel.Aviso, nome, horarioFmt, "");
+            _state.Set(keyA, now.ToString("o"));
+            FireAlert(AlertTipo.Entrada, AlertNivel.Aviso, nome, horFmt, "");
         }
     }
 
-    // ── ALMOÇO ──────────────────────────────────────────────────────────
+    // ── ALMOÇO ───────────────────────────────────────────────────────────
 
-    private void CheckAlmoco(List<(DateTime Ts, string Type)> punches, string date)
+    private void CheckAlmoco(
+        List<(DateTime Ts, string Type)> entradas,
+        List<(DateTime Ts, string Type)> saidas,
+        string date)
     {
-        var cfg  = _config.Schedule.Almoco;
+        var cfg = _config.Schedule.Almoco;
         if (!cfg.Enabled) return;
 
-        var id   = _config.Person.IdPerson;
-        var nome = _config.Person.Nome;
-        var hoje = DateTime.Now.Date;
-        var now  = DateTime.Now;
-        var keyEstado = $"{id}_almoco";
+        var id     = _config.Person.IdPerson;
+        var nome   = _config.Person.Nome;
+        var hoje   = DateTime.Now.Date;
+        var now    = DateTime.Now;
+        var keyEst = $"{id}_almoco";
 
-        // 3ª batida = retorno
-        if (punches.Count >= 3)
+        // Retorno do almoço = 2ª entrada real após 1ª saída real
+        // (ignora entradas duplicadas consecutivas)
+        if (entradas.Count >= 2 && saidas.Count >= 1)
         {
-            _state.Remove(keyEstado);
-            _state.Remove($"{id}_almoco_aviso_{hoje:yyyyMMdd}");
-            _state.Remove($"{id}_almoco_urgente_{hoje:yyyyMMdd}");
-            return;
+            // Tem saída almoço E retorno → cancela alerta
+            var primeiraS = saidas[0];
+            var segundaE  = entradas.FirstOrDefault(e => e.Ts > primeiraS.Ts);
+            if (segundaE.Ts != default)
+            {
+                _state.Remove(keyEst);
+                _state.Remove($"{id}_almoco_aviso_{hoje:yyyyMMdd}");
+                _state.Remove($"{id}_almoco_urgente_{hoje:yyyyMMdd}");
+                StopCycle($"{AlertTipo.Almoco}_{AlertNivel.Aviso}");
+                StopCycle($"{AlertTipo.Almoco}_{AlertNivel.Urgente}");
+                return;
+            }
         }
 
-        // 2ª batida = saída almoço
-        if (punches.Count >= 2)
+        // Saída para almoço = 1ª saída real dentro da janela de almoço
+        if (saidas.Count >= 1)
         {
-            var segunda = punches[1];
-
+            var primeiraS = saidas[0];
             if (TimeOnly.TryParse(cfg.JanelaInicio, out var jIni) &&
                 TimeOnly.TryParse(cfg.JanelaFim,    out var jFim))
             {
-                var hora2 = TimeOnly.FromDateTime(segunda.Ts);
-                if (hora2 >= jIni && hora2 <= jFim)
+                var hs = TimeOnly.FromDateTime(primeiraS.Ts);
+                if (hs >= jIni && hs <= jFim && !_state.Exists(keyEst))
                 {
-                    if (!_state.Exists(keyEstado))
+                    var esperado = primeiraS.Ts + TimeSpan.FromMinutes(cfg.DuracaoMinutos);
+                    var gA = esperado - TimeSpan.FromMinutes(cfg.AntecedenciaMinutos);
+                    var gU = esperado + TimeSpan.FromMinutes(cfg.ToleranciaMinutos);
+                    _state.Set(keyEst, new
                     {
-                        var esperado  = segunda.Ts + TimeSpan.FromMinutes(cfg.DuracaoMinutos);
-                        var gAviso    = esperado - TimeSpan.FromMinutes(cfg.AntecedenciaMinutos);
-                        var gUrgente  = esperado + TimeSpan.FromMinutes(cfg.ToleranciaMinutos);
-
-                        _state.Set(keyEstado, new
-                        {
-                            lunch_start     = segunda.Ts.ToString("o"),
-                            expected_return = esperado.ToString("o"),
-                            gatilho_aviso   = gAviso.ToString("o"),
-                            gatilho_urgente = gUrgente.ToString("o"),
-                        });
-                    }
+                        lunch_start     = primeiraS.Ts.ToString("o"),
+                        expected_return = esperado.ToString("o"),
+                        gatilho_aviso   = gA.ToString("o"),
+                        gatilho_urgente = gU.ToString("o"),
+                    });
                 }
             }
         }
 
         // Verificar alertas
-        var rec = _state.Get<System.Text.Json.Nodes.JsonObject>(keyEstado);
+        var rec = _state.Get<System.Text.Json.Nodes.JsonObject>(keyEst);
         if (rec == null) return;
 
-        var keyAviso   = $"{id}_almoco_aviso_{hoje:yyyyMMdd}";
-        var keyUrgente = $"{id}_almoco_urgente_{hoje:yyyyMMdd}";
+        var keyA = $"{id}_almoco_aviso_{hoje:yyyyMMdd}";
+        var keyU = $"{id}_almoco_urgente_{hoje:yyyyMMdd}";
 
-        if (!DateTime.TryParse(rec["lunch_start"]?.ToString(),     out var lunchStart))    return;
-        if (!DateTime.TryParse(rec["expected_return"]?.ToString(),  out var expectedReturn)) return;
-        if (!DateTime.TryParse(rec["gatilho_aviso"]?.ToString(),    out var gA))             return;
-        if (!DateTime.TryParse(rec["gatilho_urgente"]?.ToString(),  out var gU))             return;
+        if (!DateTime.TryParse(rec["lunch_start"]?.ToString(),     out var ls))  return;
+        if (!DateTime.TryParse(rec["expected_return"]?.ToString(),  out var er))  return;
+        if (!DateTime.TryParse(rec["gatilho_aviso"]?.ToString(),    out var gAv)) return;
+        if (!DateTime.TryParse(rec["gatilho_urgente"]?.ToString(),  out var gUr)) return;
 
-        var saidaFmt   = lunchStart.ToString("HH:mm");
-        var esperadoFmt = expectedReturn.ToString("HH:mm");
+        var saidaFmt   = ls.ToString("HH:mm");
+        var esperadoFmt = er.ToString("HH:mm");
 
-        if (now >= gU && !_state.Exists(keyUrgente))
+        if (now >= gUr && !_state.Exists(keyU))
         {
-            _state.Set(keyUrgente, now.ToString("o"));
+            _state.Set(keyU, now.ToString("o"));
             FireAlert(AlertTipo.Almoco, AlertNivel.Urgente, nome, saidaFmt, esperadoFmt);
             return;
         }
-
-        if (now >= gA && !_state.Exists(keyAviso))
+        if (now >= gAv && !_state.Exists(keyA))
         {
-            _state.Set(keyAviso, now.ToString("o"));
+            _state.Set(keyA, now.ToString("o"));
             FireAlert(AlertTipo.Almoco, AlertNivel.Aviso, nome, saidaFmt, esperadoFmt);
         }
     }
 
     // ── SAÍDA ────────────────────────────────────────────────────────────
 
-    private void CheckSaida(List<(DateTime Ts, string Type)> punches)
+    private void CheckSaida(
+        List<(DateTime Ts, string Type)> entradas,
+        List<(DateTime Ts, string Type)> saidas)
     {
-        var cfg  = _config.Schedule.Saida;
+        var cfg = _config.Schedule.Saida;
         if (!cfg.Enabled) return;
 
-        var id   = _config.Person.IdPerson;
-        var nome = _config.Person.Nome;
-        var hoje = DateTime.Now.Date;
-        var now  = DateTime.Now;
+        var now   = DateTime.Now;
+        var hoje  = now.Date;
+        var keyA  = $"{_config.Person.IdPerson}_saida_aviso_{hoje:yyyyMMdd}";
+        var keyU  = $"{_config.Person.IdPerson}_saida_urgente_{hoje:yyyyMMdd}";
 
-        var keyAviso   = $"{id}_saida_aviso_{hoje:yyyyMMdd}";
-        var keyUrgente = $"{id}_saida_urgente_{hoje:yyyyMMdd}";
-
-        var temSaidaFinal = punches.Count > 0 && punches.Count % 2 == 0;
+        // Saída final = última batida é do tipo Saída e não tem entrada depois dela
+        // Considera saída final quando há mais saídas que entradas pós-almoço
+        // Simplificado: se a última batida registrada é SAIDA → já bateu saída
+        var ultimaBatida = entradas.Concat(saidas).OrderBy(x => x.Ts).LastOrDefault();
+        var temSaidaFinal = ultimaBatida.Type == "SAIDA"
+            && TimeOnly.FromDateTime(ultimaBatida.Ts) >=
+               TimeOnly.Parse(_config.Schedule.Almoco.JanelaFim);
         if (temSaidaFinal) return;
 
-        if (!TimeOnly.TryParse(cfg.Horario, out var horarioTime)) return;
-        var horarioDt    = hoje.Add(horarioTime.ToTimeSpan());
-        var gatilhoAviso = horarioDt - TimeSpan.FromMinutes(cfg.AntecedenciaMinutos);
-        var gatilhoUrg   = horarioDt + TimeSpan.FromMinutes(cfg.ToleranciaMinutos);
-        var horarioFmt   = horarioTime.ToString("HH:mm");
+        var punches = saidas; // compatibilidade com código abaixo
 
-        if (now >= gatilhoUrg && !_state.Exists(keyUrgente))
+        if (!TimeOnly.TryParse(cfg.Horario, out var t)) return;
+        var base_    = hoje.Add(t.ToTimeSpan());
+        var gatAviso = base_ - TimeSpan.FromMinutes(cfg.AntecedenciaMinutos);
+        var gatUrg   = base_ + TimeSpan.FromMinutes(cfg.ToleranciaMinutos);
+        var nome     = _config.Person.Nome;
+        var horFmt   = t.ToString("HH:mm");
+
+        if (now >= gatUrg && !_state.Exists(keyU))
         {
-            _state.Set(keyUrgente, now.ToString("o"));
-            FireAlert(AlertTipo.Saida, AlertNivel.Urgente, nome, horarioFmt, "");
+            _state.Set(keyU, now.ToString("o"));
+            FireAlert(AlertTipo.Saida, AlertNivel.Urgente, nome, horFmt, "");
             return;
         }
-
-        if (now >= gatilhoAviso && !_state.Exists(keyAviso))
+        if (now >= gatAviso && !_state.Exists(keyA))
         {
-            _state.Set(keyAviso, now.ToString("o"));
-            FireAlert(AlertTipo.Saida, AlertNivel.Aviso, nome, horarioFmt, "");
+            _state.Set(keyA, now.ToString("o"));
+            FireAlert(AlertTipo.Saida, AlertNivel.Aviso, nome, horFmt, "");
+        }
+    }
+
+    // ── AlertCycleManager ────────────────────────────────────────────────
+
+    private void FireAlert(AlertTipo tipo, AlertNivel nivel,
+        string nome, string info1, string info2)
+    {
+        var key = $"{tipo}_{nivel}";
+        if (_cycles.ContainsKey(key)) return;
+
+        var manager = new AlertCycleManager(tipo, nivel, nome, info1, info2);
+        _cycles[key] = manager;
+        manager.Start();
+    }
+
+    private void StopCycle(string key)
+    {
+        if (_cycles.TryGetValue(key, out var c))
+        {
+            c.Stop();
+            _cycles.Remove(key);
         }
     }
 }

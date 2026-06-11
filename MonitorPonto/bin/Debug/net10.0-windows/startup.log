@@ -1,14 +1,35 @@
-[2026-06-09 15:27:20] === Iniciando MonitorPonto ===
-[2026-06-09 15:27:20] Config:  / id=0
-[2026-06-09 15:27:21] Tray criado
-[2026-06-09 15:27:21] Config incompleto — abrindo configurações
-[2026-06-09 15:29:30] === Iniciando MonitorPonto ===
-[2026-06-09 15:29:30] Config:  / id=0
-[2026-06-09 15:29:33] Tray criado
-[2026-06-09 15:29:33] Config incompleto — abrindo configurações
-[2026-06-09 15:29:38] Startup OK
-[2026-06-09 15:30:00] === Iniciando MonitorPonto ===
-[2026-06-09 15:30:00] Config:  / id=0
-[2026-06-09 15:30:01] Tray criado
-[2026-06-09 15:30:01] Config incompleto — abrindo configurações
-[2026-06-09 15:31:24] Startup OK
+[2026-06-11 14:58:06] === Iniciando MonitorPonto ===
+[2026-06-11 14:58:07] Registro de inicialização automática atualizado: C:\Users\rafael.souza\Desktop\BC - Rafael\Projects\Projects\monitorPonto\MonitorPonto\bin\Debug\net10.0-windows\MonitorPonto.exe
+[2026-06-11 14:58:07] Config:  / id=0
+[2026-06-11 14:58:08] Tray criado
+[2026-06-11 14:58:08] Config incompleto — abrindo configurações
+[2026-06-11 14:59:23] Config atualizado — monitoramento reiniciado
+[2026-06-11 14:59:23] Startup OK
+[2026-06-11 15:14:48] === Iniciando MonitorPonto ===
+[2026-06-11 15:14:48] Config: Rafael de Souza Fagundes / id=102
+[2026-06-11 15:14:50] Tray criado
+[2026-06-11 15:14:50] Iniciando monitoramento
+[2026-06-11 15:14:50] Startup OK
+[2026-06-11 15:22:03] Encerrando
+[2026-06-11 15:22:03] OnExit
+[2026-06-11 15:22:18] === Iniciando MonitorPonto ===
+[2026-06-11 15:22:19] Config: Rafael de Souza Fagundes / id=102
+[2026-06-11 15:22:20] Tray criado
+[2026-06-11 15:22:20] Iniciando monitoramento
+[2026-06-11 15:22:20] Startup OK
+[2026-06-11 15:23:17] === Iniciando MonitorPonto ===
+[2026-06-11 15:23:17] Config: Rafael de Souza Fagundes / id=102
+[2026-06-11 15:23:18] Tray criado
+[2026-06-11 15:23:18] Iniciando monitoramento
+[2026-06-11 15:23:19] Startup OK
+[2026-06-11 15:28:26] === Iniciando MonitorPonto ===
+[2026-06-11 15:28:26] Config: Rafael de Souza Fagundes / id=102
+[2026-06-11 15:28:27] Tray criado
+[2026-06-11 15:28:27] Iniciando monitoramento
+[2026-06-11 15:28:28] Startup OK
+[2026-06-11 15:28:48] Config atualizado — monitoramento reiniciado
+[2026-06-11 15:29:46] === Iniciando MonitorPonto ===
+[2026-06-11 15:29:47] Config: Rafael de Souza Fagundes / id=102
+[2026-06-11 15:29:49] Tray criado
+[2026-06-11 15:29:49] Iniciando monitoramento
+[2026-06-11 15:29:49] Startup OK

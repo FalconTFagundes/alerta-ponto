@@ -1,14 +1,12 @@
 {
   "rhid": {
-    "base_url": "https://www.rhid.com.br/v2/api.svc",
-    "repp_url": "https://repp.rhid.com.br",
-    "username": "",
-    "password": "",
+    "username": "rafael.souza@bigcard.com.br",
+    "password": "9630",
     "token_refresh_interval_minutes": 50
   },
   "person": {
-    "id_person": 0,
-    "nome": ""
+    "id_person": 102,
+    "nome": "Rafael de Souza Fagundes"
   },
   "schedule": {
     "horario_ativo": {
@@ -16,7 +14,7 @@
       "fim": "19:00"
     },
     "entrada": {
-      "enabled": true,
+      "enabled": false,
       "horario": "08:00",
       "antecedencia_minutos": 1,
       "tolerancia_minutos": 3

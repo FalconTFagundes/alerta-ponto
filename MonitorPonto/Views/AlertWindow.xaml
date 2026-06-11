@@ -8,103 +8,57 @@
         ShowInTaskbar="True"
         Background="Transparent">
 
-    <Window.Resources>
-        <Style x:Key="BtnOk" TargetType="Button">
-            <Setter Property="FontFamily" Value="Segoe UI"/>
-            <Setter Property="FontSize" Value="22"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Padding" Value="50,18"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Template">
-                <Setter.Value>
+    <Grid x:Name="GridRoot">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="800">
+
+            <TextBlock x:Name="TxtIcon"
+                       FontFamily="Segoe UI Emoji" FontSize="90"
+                       HorizontalAlignment="Center" Margin="0,0,0,10"/>
+
+            <TextBlock x:Name="TxtTitulo"
+                       FontFamily="Segoe UI" FontSize="36" FontWeight="Bold"
+                       HorizontalAlignment="Center" TextAlignment="Center"
+                       TextWrapping="Wrap" Margin="0,0,0,8"/>
+
+            <TextBlock x:Name="TxtSubtitulo"
+                       FontFamily="Segoe UI" FontSize="16" Foreground="#CCCCCC"
+                       HorizontalAlignment="Center" TextAlignment="Center"
+                       Margin="0,0,0,30"/>
+
+            <TextBlock x:Name="TxtNome"
+                       FontFamily="Segoe UI" FontSize="20" Foreground="White"
+                       HorizontalAlignment="Center" Margin="0,0,0,6"/>
+
+            <TextBlock x:Name="TxtInfo1"
+                       FontFamily="Segoe UI" FontSize="17" Foreground="#A8DADC"
+                       HorizontalAlignment="Center" Margin="0,0,0,4"/>
+
+            <TextBlock x:Name="TxtInfo2"
+                       FontFamily="Segoe UI" FontSize="17" Foreground="#A8DADC"
+                       HorizontalAlignment="Center" Margin="0,0,0,4"/>
+
+            <TextBlock x:Name="TxtAgora"
+                       FontFamily="Segoe UI" FontSize="17" Foreground="#F4A261"
+                       HorizontalAlignment="Center" Margin="0,0,0,6"/>
+
+            <TextBlock x:Name="TxtCountdown"
+                       FontFamily="Segoe UI" FontSize="13" Foreground="#888888"
+                       HorizontalAlignment="Center" Margin="0,0,0,30"/>
+
+            <Button x:Name="BtnOk"
+                    FontFamily="Segoe UI" FontSize="20" FontWeight="Bold"
+                    Foreground="White" Padding="40,18" BorderThickness="0"
+                    Cursor="Hand" HorizontalAlignment="Center"
+                    Click="BtnOk_Click">
+                <Button.Template>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="border" Background="{TemplateBinding Background}"
                                 CornerRadius="8" Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Opacity" Value="0.85"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="border" Property="Opacity" Value="0.7"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
                     </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </Window.Resources>
-
-    <Grid x:Name="GridRoot">
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
-                    MaxWidth="800">
-
-            <!-- Ícone -->
-            <TextBlock x:Name="TxtIcon"
-                       FontFamily="Segoe UI Emoji"
-                       FontSize="90"
-                       HorizontalAlignment="Center"
-                       Margin="0,0,0,10"/>
-
-            <!-- Título -->
-            <TextBlock x:Name="TxtTitulo"
-                       FontFamily="Segoe UI"
-                       FontSize="36"
-                       FontWeight="Bold"
-                       HorizontalAlignment="Center"
-                       TextAlignment="Center"
-                       TextWrapping="Wrap"
-                       Margin="0,0,0,8"/>
-
-            <!-- Subtítulo -->
-            <TextBlock x:Name="TxtSubtitulo"
-                       FontFamily="Segoe UI"
-                       FontSize="16"
-                       Foreground="#CCCCCC"
-                       HorizontalAlignment="Center"
-                       TextAlignment="Center"
-                       Margin="0,0,0,30"/>
-
-            <!-- Nome -->
-            <TextBlock x:Name="TxtNome"
-                       FontFamily="Segoe UI"
-                       FontSize="20"
-                       Foreground="White"
-                       HorizontalAlignment="Center"
-                       Margin="0,0,0,6"/>
-
-            <!-- Info 1 (saída ou horário) -->
-            <TextBlock x:Name="TxtInfo1"
-                       FontFamily="Segoe UI"
-                       FontSize="17"
-                       Foreground="#A8DADC"
-                       HorizontalAlignment="Center"
-                       Margin="0,0,0,4"/>
-
-            <!-- Info 2 (retorno esperado) -->
-            <TextBlock x:Name="TxtInfo2"
-                       FontFamily="Segoe UI"
-                       FontSize="17"
-                       Foreground="#A8DADC"
-                       HorizontalAlignment="Center"
-                       Margin="0,0,0,4"/>
-
-            <!-- Agora -->
-            <TextBlock x:Name="TxtAgora"
-                       FontFamily="Segoe UI"
-                       FontSize="17"
-                       Foreground="#F4A261"
-                       HorizontalAlignment="Center"
-                       Margin="0,0,0,35"/>
-
-            <!-- Botão OK -->
-            <Button x:Name="BtnOk"
-                    Style="{StaticResource BtnOk}"
-                    HorizontalAlignment="Center"
-                    Click="BtnOk_Click"/>
+                </Button.Template>
+            </Button>
 
         </StackPanel>
     </Grid>

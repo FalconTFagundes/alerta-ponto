@@ -5,15 +5,15 @@ using MonitorPonto.Views;
 namespace MonitorPonto.Services;
 
 /// <summary>
-/// Gerencia o ciclo completo de alertas:
-///   1. Abre fullscreen por 40s
-///   2. Se não confirmado → abre ReminderWindow central
+/// Ciclo completo de alertas:
+///   1. Fullscreen por 40s
+///   2. Se não confirmado → ReminderWindow central
 ///   3. Aguarda 5 min → repete
-///   4. Quando o ponto é batido → cancela tudo
+///   4. Quando ponto batido → para
 /// </summary>
 public class AlertCycleManager
 {
-    private readonly AlertTipo _tipo;
+    private readonly AlertTipo  _tipo;
     private readonly AlertNivel _nivel;
     private readonly string _nome;
     private readonly string _info1;
@@ -21,10 +21,9 @@ public class AlertCycleManager
 
     private CancellationTokenSource? _cts;
     private ReminderWindow? _reminder;
-    private bool _running = false;
+    private bool _running;
 
-    // Intervalo entre ciclos (5 minutos)
-    private const int CycleIntervalMinutes = 5;
+    private const int CycleIntervalMinutes = 3;
 
     public AlertCycleManager(AlertTipo tipo, AlertNivel nivel,
         string nome, string info1, string info2)
@@ -55,25 +54,16 @@ public class AlertCycleManager
     {
         while (!ct.IsCancellationRequested)
         {
-            // 1. Abre fullscreen
-            bool confirmedByUser = await ShowFullscreenAsync(ct);
-            if (ct.IsCancellationRequested) break;
+            // 1. Fullscreen 40s
+            bool confirmed = await ShowFullscreenAsync(ct);
+            if (ct.IsCancellationRequested || confirmed) break;
 
-            if (confirmedByUser)
-            {
-                // Usuário confirmou — encerra o ciclo
-                break;
-            }
-
-            // 2. Não confirmou → mostra reminder central
+            // 2. Reminder central
             var proximoAlerta = DateTime.Now.AddMinutes(CycleIntervalMinutes);
             ShowReminder(proximoAlerta);
 
             // 3. Aguarda 5 min
-            try
-            {
-                await Task.Delay(TimeSpan.FromMinutes(CycleIntervalMinutes), ct);
-            }
+            try { await Task.Delay(TimeSpan.FromMinutes(CycleIntervalMinutes), ct); }
             catch (TaskCanceledException) { break; }
 
             // 4. Fecha reminder e repete
@@ -90,20 +80,11 @@ public class AlertCycleManager
 
         Application.Current.Dispatcher.Invoke(() =>
         {
-            if (ct.IsCancellationRequested)
-            {
-                tcs.TrySetResult(false);
-                return;
-            }
+            if (ct.IsCancellationRequested) { tcs.TrySetResult(false); return; }
 
             var win = new AlertWindow(_tipo, _nivel, _nome, _info1, _info2);
+            win.Closed += (_, _) => tcs.TrySetResult(win.ClosedByUser);
 
-            win.Closed += (_, _) =>
-            {
-                tcs.TrySetResult(win.ClosedByUser);
-            };
-
-            // Cancela a janela se o token for cancelado
             ct.Register(() =>
             {
                 Application.Current.Dispatcher.Invoke(() =>
@@ -134,9 +115,8 @@ public class AlertCycleManager
                 _                 => ("⚠️", "Você não bateu o ponto!")
             };
 
-            var horario = $"Horário: {DateTime.Now:HH:mm}";
-
-            _reminder = new ReminderWindow(icone, mensagem, horario, "");
+            _reminder = new ReminderWindow(icone, mensagem,
+                $"Horário: {DateTime.Now:HH:mm}", "");
             _reminder.SetProximoAlerta(proximoAlerta);
             _reminder.Show();
         });
